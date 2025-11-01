@@ -11,6 +11,7 @@ export const useProductDetail = (productId: string) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const {
     addToCart,
+    updateQuantity,
     addToFavorites,
     removeFromFavorites,
     isFavorite,
@@ -62,12 +63,19 @@ export const useProductDetail = (productId: string) => {
     });
 
     try {
-      addToCart(product, quantity);
+      // If item exists in cart, update the quantity. Otherwise, add new item.
+      if (cartQuantity > 0) {
+        updateQuantity(product.id, quantity);
+      } else {
+        addToCart(product, quantity);
+      }
 
       // Show success feedback
       Alert.alert(
-        'Added to Cart',
-        `${quantity} ${quantity > 1 ? 'items' : 'item'} added to your cart`,
+        cartQuantity > 0 ? 'Cart Updated' : 'Added to Cart',
+        `${quantity} ${quantity > 1 ? 'items' : 'item'} ${
+          cartQuantity > 0 ? 'in' : 'added to'
+        } your cart`,
         [
           {
             text: 'Continue Shopping',

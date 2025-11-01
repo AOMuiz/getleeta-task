@@ -45,7 +45,10 @@ jest.mock('react-native/Libraries/Alert/Alert', () => ({
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: {
+        retry: false,
+        gcTime: 0, // Disable caching to prevent memory leaks
+      },
     },
   });
 
@@ -55,9 +58,30 @@ const createWrapper = () => {
 };
 
 describe('useProductDetail', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    queryClient.clear();
+  });
+
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
   it('should fetch product data', async () => {
-    const { result } = renderHook(() => useProductDetail('1'), {
-      wrapper: createWrapper(),
+    const { result, unmount } = renderHook(() => useProductDetail('1'), {
+      wrapper,
     });
 
     await waitFor(() => {
@@ -66,19 +90,23 @@ describe('useProductDetail', () => {
 
     expect(result.current.product).toBeDefined();
     expect(result.current.product?.title).toBe('Test Product');
+
+    unmount();
   });
 
   it('should initialize quantity to 1', () => {
-    const { result } = renderHook(() => useProductDetail('1'), {
-      wrapper: createWrapper(),
+    const { result, unmount } = renderHook(() => useProductDetail('1'), {
+      wrapper,
     });
 
     expect(result.current.quantity).toBe(1);
+
+    unmount();
   });
 
   it('should calculate total price correctly', async () => {
-    const { result } = renderHook(() => useProductDetail('1'), {
-      wrapper: createWrapper(),
+    const { result, unmount } = renderHook(() => useProductDetail('1'), {
+      wrapper,
     });
 
     await waitFor(() => {
@@ -87,5 +115,7 @@ describe('useProductDetail', () => {
 
     // Initial total with quantity 1
     expect(result.current.totalPrice).toBe(99.99);
+
+    unmount();
   });
 });

@@ -16,4 +16,6 @@ module.exports = {
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
+  testEnvironment: 'node',
+  maxWorkers: 1, // Run tests serially to avoid worker issues
 };

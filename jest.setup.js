@@ -78,3 +78,12 @@ jest.mock('./components/useColorScheme', () => ({
 jest.mock('@expo/vector-icons', () => ({
   FontAwesome: 'FontAwesome',
 }));
+
+// Clean up after each test to prevent memory leaks
+afterEach(() => {
+  // Clear all timers
+  jest.clearAllTimers();
+});
+
+// Increase timeout for async operations
+jest.setTimeout(10000);

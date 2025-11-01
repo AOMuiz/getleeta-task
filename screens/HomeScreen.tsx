@@ -2,7 +2,9 @@ import { IconSymbol } from '@/components/IconSymbol';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductListSkeleton } from '@/components/SkeletonLoader';
 import { EmptyState, ErrorState } from '@/components/StateViews';
-import ScreenContainer from '@/components/screen-container';
+import ScreenContainer, {
+  edgesHorizontal,
+} from '@/components/screen-container';
 import {
   BorderRadius,
   Colors,
@@ -200,7 +202,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScreenContainer withPadding={false} edges={['top', 'left', 'right']}>
+    <ScreenContainer withPadding={false} edges={['top', ...edgesHorizontal]}>
       {renderContent()}
     </ScreenContainer>
   );

@@ -70,6 +70,7 @@ const createWrapper = () => {
     defaultOptions: {
       queries: {
         retry: false,
+        gcTime: 0, // Disable caching to prevent memory leaks
       },
     },
   });
@@ -79,9 +80,21 @@ const createWrapper = () => {
 };
 
 describe('HomeScreen', () => {
+  let queryClient: QueryClient;
+
   beforeEach(() => {
     jest.clearAllMocks();
     (useStore as unknown as jest.Mock).mockReturnValue(mockUseStore);
+
+    // Create a new QueryClient for each test
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+          gcTime: 0,
+        },
+      },
+    });
 
     // Default mock for categories
     (useCategories as jest.Mock).mockReturnValue({
@@ -90,6 +103,14 @@ describe('HomeScreen', () => {
       error: null,
     });
   });
+
+  afterEach(() => {
+    queryClient.clear();
+  });
+
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 
   describe('Loading State', () => {
     it('should display skeleton loader when loading', () => {
@@ -103,7 +124,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       // Skeleton loader should be visible
       expect(screen.getByTestId).toBeDefined();
@@ -125,7 +146,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Test Product 1')).toBeTruthy();
@@ -147,7 +168,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Good Morning 👋')).toBeTruthy();
@@ -169,7 +190,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Search for products')).toBeTruthy();
@@ -190,7 +211,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         const productCards = screen.getAllByText(/Test Product/);
@@ -211,7 +232,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Oops! Something went wrong')).toBeTruthy();
@@ -233,7 +254,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         const retryButton = screen.getByText('Retry');
@@ -253,7 +274,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         const retryButton = screen.getByText('Retry');
@@ -278,7 +299,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('No Products Found')).toBeTruthy();
@@ -306,7 +327,7 @@ describe('HomeScreen', () => {
       });
 
       const { getByTestId } = render(<HomeScreen />, {
-        wrapper: createWrapper(),
+        wrapper,
       });
 
       // Note: Testing onEndReached requires special setup with FlatList
@@ -327,7 +348,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: true,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Loading more...')).toBeTruthy();
@@ -350,7 +371,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('Popular Items')).toBeTruthy();
@@ -374,7 +395,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />, { wrapper: createWrapper() });
+      render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
         expect(screen.getByText('All')).toBeTruthy();
