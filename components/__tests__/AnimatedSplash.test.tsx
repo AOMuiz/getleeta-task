@@ -39,7 +39,7 @@ describe('AnimatedSplash', () => {
     const { getByText } = render(<AnimatedSplash onFinish={onFinish} />);
 
     expect(getByText('Getleeta')).toBeTruthy();
-    expect(getByText('Delicious food, delivered fast')).toBeTruthy();
+    expect(getByText('Shop smart, live better')).toBeTruthy();
   });
 
   it('calls onFinish after animation completes', async () => {
@@ -74,6 +74,6 @@ describe('AnimatedSplash', () => {
     const { getByText } = render(<AnimatedSplash onFinish={onFinish} />);
 
     expect(getByText('Getleeta')).toBeTruthy();
-    expect(getByText('Delicious food, delivered fast')).toBeTruthy();
+    expect(getByText('Shop smart, live better')).toBeTruthy();
   });
 });

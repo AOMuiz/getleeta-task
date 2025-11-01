@@ -124,60 +124,65 @@ export default function AnimatedSplash({ onFinish }: AnimatedSplashProps) {
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
       >
-        {/* Animated circle background */}
-        <Animated.View style={[styles.circle, circleStyle]}>
-          <View
-            style={[
-              styles.circleInner,
-              {
-                backgroundColor: isDark
-                  ? themeColors.primaryAlpha
-                  : 'rgba(255, 255, 255, 0.1)',
-              },
-            ]}
-          />
-        </Animated.View>
+        {/* Animated circle background - wrapped to prevent layout animation conflict */}
+        <View style={styles.circle}>
+          <Animated.View style={[StyleSheet.absoluteFill, circleStyle]}>
+            <View
+              style={[
+                styles.circleInner,
+                {
+                  backgroundColor: isDark
+                    ? themeColors.primaryAlpha
+                    : 'rgba(255, 255, 255, 0.1)',
+                },
+              ]}
+            />
+          </Animated.View>
+        </View>
 
         {/* Logo container */}
         <View style={styles.logoContainer}>
-          <Animated.View style={[styles.logoWrapper, logoContainerStyle]}>
-            <View
+          {/* Wrapper view to prevent layout animation conflict */}
+          <View style={styles.logoWrapper}>
+            <Animated.View style={logoContainerStyle}>
+              <View
+                style={[
+                  styles.iconBackground,
+                  { backgroundColor: isDark ? themeColors.surface : 'white' },
+                ]}
+              >
+                <Ionicons name="cart" size={80} color={themeColors.primary} />
+              </View>
+            </Animated.View>
+          </View>
+
+          {/* App name - wrapped to prevent layout animation conflict */}
+          <View>
+            <Animated.Text
               style={[
-                styles.iconBackground,
-                { backgroundColor: isDark ? themeColors.surface : 'white' },
+                styles.appName,
+                textStyle,
+                { color: isDark ? themeColors.text : 'white' },
               ]}
             >
-              <Ionicons
-                name="restaurant"
-                size={80}
-                color={themeColors.primary}
-              />
-            </View>
-          </Animated.View>
-
-          {/* App name */}
-          <Animated.Text
-            style={[
-              styles.appName,
-              textStyle,
-              { color: isDark ? themeColors.text : 'white' },
-            ]}
-          >
-            Getleeta
-          </Animated.Text>
-          <Animated.Text
-            style={[
-              styles.tagline,
-              textStyle,
-              {
-                color: isDark
-                  ? themeColors.textSecondary
-                  : 'rgba(255, 255, 255, 0.9)',
-              },
-            ]}
-          >
-            Delicious food, delivered fast
-          </Animated.Text>
+              Getleeta
+            </Animated.Text>
+          </View>
+          <View>
+            <Animated.Text
+              style={[
+                styles.tagline,
+                textStyle,
+                {
+                  color: isDark
+                    ? themeColors.textSecondary
+                    : 'rgba(255, 255, 255, 0.9)',
+                },
+              ]}
+            >
+              Shop smart, live better
+            </Animated.Text>
+          </View>
         </View>
       </LinearGradient>
     </Animated.View>
