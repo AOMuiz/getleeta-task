@@ -1,3 +1,4 @@
+import { IconSymbol } from '@/components/IconSymbol';
 import {
   BorderRadius,
   Colors,
@@ -8,7 +9,6 @@ import {
 import { useStore } from '@/stores/useStore';
 import { Product } from '@/types/api';
 import { ms, wp } from '@/utils/responsive-dimensions';
-import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import {
   Dimensions,
@@ -99,8 +99,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             hitSlop={8}
             testID="favorite-button"
           >
-            <FontAwesome
-              name={isFav ? 'heart' : 'heart-o'}
+            <IconSymbol
+              name={isFav ? 'heart.fill' : 'heart'}
               size={ms(20)}
               color={isFav ? theme.secondary : theme.textSecondary}
             />
@@ -114,7 +114,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.category}
           </Text>
           <View style={styles.rating}>
-            <FontAwesome name="star" size={ms(14)} color={theme.accent} />
+            <IconSymbol name="star.fill" size={ms(14)} color={theme.accent} />
             <Text style={styles.ratingText}>{product.rating.rate}</Text>
           </View>
         </View>
@@ -133,7 +133,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             hitSlop={8}
             testID="add-to-cart-button"
           >
-            <FontAwesome name="plus" size={ms(16)} color={theme.textInverse} />
+            <IconSymbol name="plus" size={ms(16)} color={theme.textInverse} />
           </Pressable>
         </View>
       </View>

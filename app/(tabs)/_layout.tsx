@@ -1,19 +1,10 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import React from 'react';
 
+import { IconSymbol } from '@/components/IconSymbol';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Colors as ThemeColors } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
-}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -41,7 +32,9 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol name="house.fill" size={24} color={color} />
+          ),
           headerShown: false,
         }}
       />
@@ -50,7 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'Menu',
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="th-large" color={color} />
+            <IconSymbol name="square.grid.2x2.fill" size={24} color={color} />
           ),
           headerShown: false,
         }}
@@ -60,7 +53,7 @@ export default function TabLayout() {
         options={{
           title: 'Cart',
           tabBarIcon: ({ color }) => (
-            <TabBarIcon name="shopping-cart" color={color} />
+            <IconSymbol name="cart.fill" size={24} color={color} />
           ),
           tabBarBadge: cartItemsCount > 0 ? cartItemsCount : undefined,
           headerShown: false,
@@ -70,7 +63,9 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color }) => (
+            <IconSymbol name="person.fill" size={24} color={color} />
+          ),
           headerShown: false,
         }}
       />

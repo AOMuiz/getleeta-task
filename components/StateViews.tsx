@@ -1,3 +1,4 @@
+import { IconSymbol, IconSymbolName } from '@/components/IconSymbol';
 import {
   BorderRadius,
   Colors,
@@ -6,7 +7,6 @@ import {
   Typography,
 } from '@/constants/theme';
 import { ms, wp } from '@/utils/responsive-dimensions';
-import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -19,7 +19,7 @@ import {
 const theme = Colors.light;
 
 interface EmptyStateProps {
-  icon?: keyof typeof FontAwesome.glyphMap;
+  icon?: IconSymbolName;
   title: string;
   message: string;
   actionLabel?: string;
@@ -27,7 +27,7 @@ interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  icon = 'inbox',
+  icon = 'shippingbox.fill',
   title,
   message,
   actionLabel,
@@ -35,7 +35,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <FontAwesome name={icon} size={ms(64)} color={theme.disabled} />
+      <IconSymbol name={icon} size={ms(64)} color={theme.disabled} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{message}</Text>
       {actionLabel && onAction && (
@@ -62,8 +62,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <FontAwesome
-        name="exclamation-circle"
+      <IconSymbol
+        name="exclamationmark.triangle"
         size={ms(64)}
         color={theme.error}
       />

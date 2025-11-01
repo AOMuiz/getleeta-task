@@ -1,3 +1,4 @@
+import { IconSymbol } from '@/components/IconSymbol';
 import { ProductCard } from '@/components/ProductCard';
 import { ProductListSkeleton } from '@/components/SkeletonLoader';
 import { EmptyState, ErrorState } from '@/components/StateViews';
@@ -12,7 +13,6 @@ import {
 import { useProductsList } from '@/hooks/useProductsList';
 import { Product } from '@/types/api';
 import { ms, wp } from '@/utils/responsive-dimensions';
-import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import {
   ActivityIndicator,
@@ -62,14 +62,18 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>Special For You</Text>
         </View>
         <Pressable style={styles.notificationButton}>
-          <FontAwesome name="bell" size={ms(24)} color={theme.text} />
+          <IconSymbol name="bell.fill" size={ms(24)} color={theme.text} />
           <View style={styles.notificationBadge} />
         </Pressable>
       </View>
 
       {/* Search Bar */}
       <Pressable style={styles.searchBar}>
-        <FontAwesome name="search" size={ms(20)} color={theme.textSecondary} />
+        <IconSymbol
+          name="magnifyingglass"
+          size={ms(20)}
+          color={theme.textSecondary}
+        />
         <Text style={styles.searchPlaceholder}>Search for products</Text>
       </Pressable>
 
