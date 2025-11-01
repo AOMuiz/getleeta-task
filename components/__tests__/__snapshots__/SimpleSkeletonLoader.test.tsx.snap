@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProductCardSkeleton Snapshot should match snapshot 1`] = `
+exports[`SimpleProductCardSkeleton Snapshot should match snapshot 1`] = `
 <View
   style={
     [
@@ -144,7 +144,7 @@ exports[`ProductCardSkeleton Snapshot should match snapshot 1`] = `
 </View>
 `;
 
-exports[`ProductListSkeleton Snapshot should match snapshot 1`] = `
+exports[`SimpleProductListSkeleton Snapshot should match snapshot 1`] = `
 <View
   style={
     [

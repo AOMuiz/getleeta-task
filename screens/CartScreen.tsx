@@ -11,14 +11,15 @@ import {
 } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
 import { CartItem, Product } from '@/types/api';
+import { blurhash } from '@/utils';
 import { ms, wp } from '@/utils/responsive-dimensions';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
   Dimensions,
   FlatList,
-  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -125,7 +126,8 @@ export default function CartScreen() {
         <Image
           source={{ uri: item.product.image }}
           style={styles.itemImage}
-          resizeMode="contain"
+          contentFit="contain"
+          placeholder={{ blurhash }}
         />
         <View style={styles.itemDetails}>
           <Text style={styles.itemTitle} numberOfLines={2}>

@@ -8,16 +8,11 @@ import {
 } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
 import { Product } from '@/types/api';
+import { blurhash } from '@/utils';
 import { ms, wp } from '@/utils/responsive-dimensions';
+import { Image } from 'expo-image';
 import React from 'react';
-import {
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -91,7 +86,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <Image
           source={{ uri: product.image }}
           style={styles.image}
-          resizeMode="cover"
+          placeholder={{ blurhash }}
+          contentFit="cover"
         />
         <Animated.View style={[styles.favoriteButton, favoriteAnimatedStyle]}>
           <Pressable
