@@ -14,6 +14,7 @@ This project demonstrates a production-ready mobile shopping experience with:
 - 📦 **Comprehensive state management** using Zustand for cart and favorites
 - 🧪 **Well-tested components** with Jest and React Native Testing Library
 - 📱 **Responsive design** that adapts to various screen sizes
+- 🎬 **Animated splash screen** with smooth entrance animations
 
 ## 🎯 Tech Stack
 
@@ -179,7 +180,16 @@ onPressOut={() => scale.value = withSpring(1)}
 - Shared element transitions for product images
 - Stack navigation with gesture support
 
-### 6. List Performance
+### 6. Animated Splash Screen
+
+- Beautiful entrance animation on app launch
+- Smooth gradient background with brand colors
+- Rotating and scaling logo animation
+- Text slide-up and fade-in effects
+- Automatic theme adaptation (light/dark)
+- 3-second duration with smooth exit transition
+
+### 7. List Performance
 
 **Optimizations:**
 
@@ -256,6 +266,7 @@ app/                      # Expo Router pages (file-based routing)
 
 components/              # Reusable UI components
 ├── ProductCard.tsx      # Product card with animations
+├── AnimatedSplash.tsx   # Animated splash screen component
 ├── SkeletonLoader.tsx   # Loading states
 ├── StateViews.tsx       # Empty/Error/Loading states
 ├── IconSymbol.tsx       # Cross-platform icons
@@ -523,6 +534,7 @@ If given more time, I would add:
 - **[Development Docs](./dev-docs/)** - In-depth technical documentation
 - **[Theme Guide](./THEME_USAGE_GUIDE.md)** - Design system usage
 - **[API Architecture](./docs/API_ARCHITECTURE.md)** - API layer explanation
+- **[Animated Splash Screen](./docs/SPLASH_SCREEN_GUIDE.md)** - Splash screen quick guide
 
 ### Development Docs
 
