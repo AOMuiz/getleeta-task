@@ -1,7 +1,7 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
-import { useProductDetail } from '../useProductDetail';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react-native';
 import { ReactNode } from 'react';
+import { useProductDetail } from '../useProductDetail';
 
 // Mock the services
 jest.mock('@/services/api', () => ({
@@ -37,15 +37,9 @@ jest.mock('expo-router', () => ({
 }));
 
 // Mock Alert
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  return {
-    ...RN,
-    Alert: {
-      alert: jest.fn(),
-    },
-  };
-});
+jest.mock('react-native/Libraries/Alert/Alert', () => ({
+  alert: jest.fn(),
+}));
 
 const createWrapper = () => {
   const queryClient = new QueryClient({

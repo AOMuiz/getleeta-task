@@ -1,6 +1,5 @@
-import { fetchProduct } from '@/services/api';
+import { useProduct } from '@/hooks/useAPI';
 import { useStore } from '@/stores/useStore';
-import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -13,18 +12,8 @@ export const useProductDetail = (productId: string) => {
   const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
     useStore();
 
-  // Fetch product data
-  const {
-    data: product,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['product', productId],
-    queryFn: () => fetchProduct(Number(productId)),
-    enabled: !!productId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  // Fetch product data using the API hook
+  const { data: product, isLoading, error, refetch } = useProduct(productId);
 
   // Animation values
   const imageScale = useSharedValue(1);

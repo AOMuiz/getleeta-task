@@ -70,7 +70,7 @@ export default function HomeScreen() {
       {/* Search Bar */}
       <Pressable style={styles.searchBar}>
         <FontAwesome name="search" size={ms(20)} color={theme.textSecondary} />
-        <Text style={styles.searchPlaceholder}>Search for food</Text>
+        <Text style={styles.searchPlaceholder}>Search for products</Text>
       </Pressable>
 
       {/* Categories Chips */}
@@ -139,13 +139,8 @@ export default function HomeScreen() {
   };
 
   const renderContent = () => {
-    // Show skeleton only on initial load without any data
-    if (isLoading && products.length === 0) {
-      return <ProductListSkeleton />;
-    }
-
-    // Show error state
-    if (error) {
+    // Show error state (only if no products to show)
+    if (error && products.length === 0) {
       return (
         <ErrorState
           title="Oops! Something went wrong"
@@ -155,8 +150,8 @@ export default function HomeScreen() {
       );
     }
 
-    // Show empty state
-    if (!products || products.length === 0) {
+    // Show empty state (only when not loading and no products)
+    if (!isLoading && (!products || products.length === 0)) {
       return (
         <EmptyState
           icon="shopping-basket"
@@ -166,10 +161,10 @@ export default function HomeScreen() {
       );
     }
 
-    // Show products list
+    // Show products list (or skeleton on initial load)
     return (
       <FlatList
-        data={products}
+        data={isLoading && products.length === 0 ? [] : products}
         renderItem={({ item }) => (
           <ProductCard
             product={item}
@@ -182,12 +177,15 @@ export default function HomeScreen() {
         contentContainerStyle={styles.listContent}
         ListHeaderComponent={renderHeader}
         ListFooterComponent={renderFooter}
+        ListEmptyComponent={
+          isLoading && products.length === 0 ? <ProductListSkeleton /> : null
+        }
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={refreshing}
+            refreshing={refreshing || (isLoading && products.length > 0)}
             onRefresh={onRefresh}
             tintColor={theme.primary}
             colors={[theme.primary]}

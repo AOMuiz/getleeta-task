@@ -1,7 +1,7 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
-import { useProductsList } from '../useProductsList';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { ReactNode } from 'react';
+import { useProductsList } from '../useProductsList';
 
 // Mock the services
 jest.mock('@/services/api', () => ({
@@ -71,8 +71,10 @@ describe('useProductsList', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Select a category
-    result.current.handleCategoryPress('electronics');
+    // Select a category wrapped in act
+    act(() => {
+      result.current.handleCategoryPress('electronics');
+    });
 
     await waitFor(() => {
       expect(result.current.selectedCategory).toBe('electronics');

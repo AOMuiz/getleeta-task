@@ -5,22 +5,29 @@
 import HomeScreen from '@/screens/HomeScreen';
 import { useStore } from '@/stores/useStore';
 import { Product } from '@/types/api';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   fireEvent,
   render,
   screen,
   waitFor,
 } from '@testing-library/react-native';
+import { ReactNode } from 'react';
 
-// Mock TanStack Query
-jest.mock('@tanstack/react-query');
+// Mock the API hooks
+jest.mock('@/hooks/useAPI', () => ({
+  useCategories: jest.fn(),
+  useInfiniteProducts: jest.fn(),
+}));
+
 jest.mock('@/stores/useStore');
 jest.mock('expo-router', () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
 }));
+
+import { useCategories, useInfiniteProducts } from '@/hooks/useAPI';
 
 const mockProducts: Product[] = [
   {
@@ -57,15 +64,36 @@ const mockUseStore = {
   getCartItemsCount: jest.fn(() => 0),
 };
 
+// Create a wrapper with QueryClient
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+  return ({ children }: { children: ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useStore as unknown as jest.Mock).mockReturnValue(mockUseStore);
+
+    // Default mock for categories
+    (useCategories as jest.Mock).mockReturnValue({
+      data: ['electronics', 'jewelery', "men's clothing", "women's clothing"],
+      isLoading: false,
+      error: null,
+    });
   });
 
   describe('Loading State', () => {
     it('should display skeleton loader when loading', () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: true,
         error: null,
@@ -75,7 +103,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       // Skeleton loader should be visible
       expect(screen.getByTestId).toBeDefined();
@@ -84,7 +112,7 @@ describe('HomeScreen', () => {
 
   describe('Success State', () => {
     it('should render products when data is loaded', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -97,7 +125,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('Test Product 1')).toBeTruthy();
@@ -106,7 +134,7 @@ describe('HomeScreen', () => {
     });
 
     it('should display header with greeting', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -119,7 +147,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('Good Morning 👋')).toBeTruthy();
@@ -128,7 +156,7 @@ describe('HomeScreen', () => {
     });
 
     it('should display search bar', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -141,15 +169,15 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Search for food')).toBeTruthy();
+        expect(screen.getByText('Search for products')).toBeTruthy();
       });
     });
 
     it('should display correct number of products', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -162,7 +190,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         const productCards = screen.getAllByText(/Test Product/);
@@ -173,7 +201,7 @@ describe('HomeScreen', () => {
 
   describe('Error State', () => {
     it('should display error message when fetch fails', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
@@ -183,7 +211,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('Oops! Something went wrong')).toBeTruthy();
@@ -195,7 +223,7 @@ describe('HomeScreen', () => {
 
     it('should have retry button on error', async () => {
       const refetchMock = jest.fn();
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
@@ -205,7 +233,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         const retryButton = screen.getByText('Retry');
@@ -215,7 +243,7 @@ describe('HomeScreen', () => {
 
     it('should call refetch when retry button is pressed', async () => {
       const refetchMock = jest.fn();
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
@@ -225,7 +253,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         const retryButton = screen.getByText('Retry');
@@ -237,7 +265,7 @@ describe('HomeScreen', () => {
 
   describe('Empty State', () => {
     it('should display empty state when no products', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [[]],
           pageParams: [0],
@@ -250,7 +278,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('No Products Found')).toBeTruthy();
@@ -264,7 +292,7 @@ describe('HomeScreen', () => {
   describe('Infinite Scroll', () => {
     it('should call fetchNextPage when scrolling to end', async () => {
       const fetchNextPageMock = jest.fn();
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -277,14 +305,16 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      const { getByTestId } = render(<HomeScreen />);
+      const { getByTestId } = render(<HomeScreen />, {
+        wrapper: createWrapper(),
+      });
 
       // Note: Testing onEndReached requires special setup with FlatList
       expect(fetchNextPageMock).toBeDefined();
     });
 
     it('should show loading footer when fetching next page', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -297,7 +327,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: true,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('Loading more...')).toBeTruthy();
@@ -307,7 +337,7 @@ describe('HomeScreen', () => {
 
   describe('Section Headers', () => {
     it('should display Popular Items section header', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -320,7 +350,7 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('Popular Items')).toBeTruthy();
@@ -331,7 +361,7 @@ describe('HomeScreen', () => {
 
   describe('Category Chips', () => {
     it('should display category chips', async () => {
-      (useInfiniteQuery as jest.Mock).mockReturnValue({
+      (useInfiniteProducts as jest.Mock).mockReturnValue({
         data: {
           pages: [mockProducts],
           pageParams: [0],
@@ -344,13 +374,13 @@ describe('HomeScreen', () => {
         isFetchingNextPage: false,
       });
 
-      render(<HomeScreen />);
+      render(<HomeScreen />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(screen.getByText('All')).toBeTruthy();
         expect(screen.getByText('Electronics')).toBeTruthy();
-        expect(screen.getByText('Clothing')).toBeTruthy();
-        expect(screen.getByText('Jewelry')).toBeTruthy();
+        expect(screen.getByText('Jewelery')).toBeTruthy();
+        expect(screen.getByText("Men's clothing")).toBeTruthy();
       });
     });
   });

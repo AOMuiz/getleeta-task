@@ -8,8 +8,9 @@ import {
   fetchProduct,
   fetchProducts,
   fetchProductsByCategory,
+  fetchProductsPage,
 } from '@/services/api';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 
 /**
  * Hook to fetch all products
@@ -27,11 +28,14 @@ export const useProducts = (limit?: number) => {
 /**
  * Hook to fetch a single product by ID
  */
-export const useProduct = (id: number) => {
+export const useProduct = (id: number | string) => {
+  const productId = typeof id === 'string' ? Number(id) : id;
+
   return useQuery({
-    queryKey: ['product', id],
-    queryFn: () => fetchProduct(id),
-    enabled: id > 0, // Only fetch if ID is valid
+    queryKey: ['product', productId],
+    queryFn: () => fetchProduct(productId),
+    enabled: !!id && productId > 0, // Only fetch if ID is valid
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -55,6 +59,34 @@ export const useProductsByCategory = (category: string) => {
     queryFn: () => fetchProductsByCategory(category),
     enabled: category.length > 0, // Only fetch if category is provided
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+/**
+ * Hook to fetch products with infinite scroll pagination
+ * @param category - Optional category filter
+ * @param limit - Items per page
+ */
+export const useInfiniteProducts = (category: string | null, limit = 10) => {
+  return useInfiniteQuery({
+    queryKey: ['products-infinite', category],
+    queryFn: ({ pageParam = 0 }) =>
+      fetchProductsPage({
+        pageParam,
+        limit,
+        category: category || undefined,
+      }),
+    getNextPageParam: (lastPage, allPages) => {
+      // Check if there are more pages
+      if (lastPage.length < limit) {
+        return undefined; // No more pages
+      }
+      return allPages.length;
+    },
+    initialPageParam: 0,
+    staleTime: 5 * 60 * 1000,
+    // Keep previous data while fetching new category to avoid flashing
+    placeholderData: (previousData) => previousData,
   });
 };
 

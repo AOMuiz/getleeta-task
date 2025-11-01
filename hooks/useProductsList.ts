@@ -1,5 +1,4 @@
-import { fetchCategories, fetchProductsPage } from '@/services/api';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useCategories, useInfiniteProducts } from '@/hooks/useAPI';
 import { useCallback, useMemo, useState } from 'react';
 
 const ITEMS_PER_PAGE = 10;
@@ -8,18 +7,15 @@ export const useProductsList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Fetch categories
-  const { data: categoriesData, isLoading: isCategoriesLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: fetchCategories,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-  });
+  // Fetch categories using API hook
+  const { data: categoriesData, isLoading: isCategoriesLoading } =
+    useCategories();
 
   const categories = useMemo(() => {
     return categoriesData || [];
   }, [categoriesData]);
 
-  // Fetch products with infinite scroll
+  // Fetch products with infinite scroll using API hook
   const {
     data,
     isLoading: isProductsLoading,
@@ -28,24 +24,7 @@ export const useProductsList = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['products-infinite', selectedCategory],
-    queryFn: ({ pageParam = 0 }) =>
-      fetchProductsPage({
-        pageParam,
-        limit: ITEMS_PER_PAGE,
-        category: selectedCategory || undefined,
-      }),
-    getNextPageParam: (lastPage, allPages) => {
-      // Check if there are more pages
-      if (lastPage.length < ITEMS_PER_PAGE) {
-        return undefined; // No more pages
-      }
-      return allPages.length;
-    },
-    initialPageParam: 0,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+  } = useInfiniteProducts(selectedCategory, ITEMS_PER_PAGE);
 
   // Flatten all pages into a single array
   const products = useMemo(
