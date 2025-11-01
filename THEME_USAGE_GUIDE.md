@@ -33,13 +33,9 @@ The theme system is located in `/constants/theme.ts` and is used throughout all 
 This theme system follows industry best practices used by companies like Airbnb, Shopify, and Meta:
 
 1. **Design Tokens**: All design decisions (colors, spacing, typography) are centralized as tokens, making it easy to maintain consistency and make global changes.
-
 2. **Scalability**: Adding new screens or components is faster because developers don't need to make styling decisions - they just use the existing tokens.
-
 3. **Maintainability**: Need to change the primary color? Update it in one place (`theme.ts`) instead of searching through dozens of files.
-
 4. **Accessibility**: The theme includes proper contrast ratios and responsive scaling to ensure the app is usable for all users.
-
 5. **Developer Experience**: TypeScript autocomplete helps developers discover available colors, sizes, and other tokens without memorizing them.
 
 ### Technical Benefits
@@ -471,6 +467,7 @@ const styles = StyleSheet.create({
    - `12` → `BorderRadius.md`
 
 7. **Replace typography:**
+
    - `fontSize: 16` → `fontSize: ms(Typography.sizes.base)`
    - `fontWeight: '600'` → `fontWeight: Typography.weights.semibold`
 
@@ -580,6 +577,6 @@ For questions or issues with the theme system:
 
 ---
 
-**Version:** 1.0.0  
-**Last Updated:** January 2025  
+**Version:** 1.0.0
+**Last Updated:** November 2025
 **Author:** Getleeta Task Project
