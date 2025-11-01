@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     width: '100%',
-    height: ms(220),
+    height: ms(200),
     backgroundColor: theme.surfaceVariant,
     position: 'relative',
   },

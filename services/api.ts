@@ -31,6 +31,42 @@ export const fetchProducts = async (limit?: number): Promise<Product[]> => {
 };
 
 /**
+ * Fetch products page for infinite scroll
+ * @param pageParam - Page offset
+ * @param limit - Items per page
+ * @param category - Optional category filter
+ */
+export const fetchProductsPage = async ({
+  pageParam = 0,
+  limit = 10,
+  category,
+}: {
+  pageParam?: number;
+  limit?: number;
+  category?: string;
+}): Promise<Product[]> => {
+  try {
+    let url = category
+      ? Endpoints.products.byCategory(category)
+      : Endpoints.products.all;
+
+    const { data } = await apiClient.get<Product[]>(url);
+
+    // Simulate pagination since the API doesn't support offset
+    const start = pageParam * limit;
+    const end = start + limit;
+    return data.slice(start, end);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch products page'
+      );
+    }
+    throw new Error('Failed to fetch products page');
+  }
+};
+
+/**
  * Fetch a single product by ID
  */
 export const fetchProduct = async (id: number): Promise<Product> => {

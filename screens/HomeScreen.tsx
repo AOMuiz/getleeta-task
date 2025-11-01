@@ -1,5 +1,6 @@
 import { ProductCard } from '@/components/ProductCard';
 import { ProductListSkeleton } from '@/components/SkeletonLoader';
+import { EmptyState, ErrorState } from '@/components/StateViews';
 import ScreenContainer from '@/components/screen-container';
 import {
   BorderRadius,
@@ -8,91 +9,49 @@ import {
   Spacing,
   Typography,
 } from '@/constants/theme';
+import { useProductsList } from '@/hooks/useProductsList';
 import { Product } from '@/types/api';
 import { ms, wp } from '@/utils/responsive-dimensions';
 import { FontAwesome } from '@expo/vector-icons';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Pressable,
   RefreshControl,
+  ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 
-const ITEMS_PER_PAGE = 10;
-
 // Theme colors (light mode)
 const theme = Colors.light;
 
-const fetchProductsPage = async ({ pageParam = 0 }) => {
-  const { data } = await axios.get<Product[]>(
-    'https://fakestoreapi.com/products',
-    {
-      params: {
-        limit: ITEMS_PER_PAGE,
-        offset: pageParam,
-      },
-    }
-  );
-  return data;
-};
-
 export default function HomeScreen() {
   const router = useRouter();
+
   const {
-    data,
+    products,
+    categories,
+    selectedCategory,
     isLoading,
-    error,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ['products-infinite'],
-    queryFn: fetchProductsPage,
-    getNextPageParam: (lastPage, allPages) => {
-      // Fake Store API has limited products, so we'll simulate pagination
-      // In a real app, you'd check if there are more pages from the API response
-      const totalLoaded = allPages.length * ITEMS_PER_PAGE;
-      return totalLoaded < 20 ? allPages.length : undefined; // Max 20 items
-    },
-    initialPageParam: 0,
-  });
-
-  const [refreshing, setRefreshing] = React.useState(false);
-
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+    refreshing,
+    error,
+    hasNextPage,
+    handleCategoryPress,
+    handleLoadMore,
+    onRefresh,
+    refetch,
+  } = useProductsList();
 
   const handleProductPress = (product: Product) => {
-    // TODO: Navigate to product detail screen
-    // router.push({
-    //   pathname: '/product-detail',
-    //   params: { id: product.id },
-    // });
-    console.log('Product pressed:', product.title);
+    router.push({
+      pathname: '/product-detail',
+      params: { id: product.id.toString() },
+    });
   };
-
-  const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  };
-
-  // Flatten all pages into a single array
-  const products = React.useMemo(
-    () => data?.pages.flatMap((page) => page) ?? [],
-    [data]
-  );
 
   const renderHeader = () => (
     <>
@@ -115,26 +74,48 @@ export default function HomeScreen() {
       </Pressable>
 
       {/* Categories Chips */}
-      <View style={styles.categoriesContainer}>
-        <View style={styles.categoriesContent}>
-          <Pressable style={[styles.categoryChip, styles.categoryChipActive]}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesContainer}
+        contentContainerStyle={styles.categoriesContent}
+      >
+        <Pressable
+          style={[
+            styles.categoryChip,
+            selectedCategory === null && styles.categoryChipActive,
+          ]}
+          onPress={() => handleCategoryPress(null)}
+        >
+          <Text
+            style={[
+              styles.categoryChipText,
+              selectedCategory === null && styles.categoryChipTextActive,
+            ]}
+          >
+            All
+          </Text>
+        </Pressable>
+        {categories.map((category) => (
+          <Pressable
+            key={category}
+            style={[
+              styles.categoryChip,
+              selectedCategory === category && styles.categoryChipActive,
+            ]}
+            onPress={() => handleCategoryPress(category)}
+          >
             <Text
-              style={[styles.categoryChipText, styles.categoryChipTextActive]}
+              style={[
+                styles.categoryChipText,
+                selectedCategory === category && styles.categoryChipTextActive,
+              ]}
             >
-              All
+              {category.charAt(0).toUpperCase() + category.slice(1)}
             </Text>
           </Pressable>
-          <Pressable style={styles.categoryChip}>
-            <Text style={styles.categoryChipText}>Electronics</Text>
-          </Pressable>
-          <Pressable style={styles.categoryChip}>
-            <Text style={styles.categoryChipText}>Clothing</Text>
-          </Pressable>
-          <Pressable style={styles.categoryChip}>
-            <Text style={styles.categoryChipText}>Jewelry</Text>
-          </Pressable>
-        </View>
-      </View>
+        ))}
+      </ScrollView>
 
       {/* Section Header */}
       <View style={styles.sectionHeader}>
@@ -157,55 +138,36 @@ export default function HomeScreen() {
     );
   };
 
-  if (isLoading && !data) {
-    return (
-      <ScreenContainer withPadding={false}>
-        <ProductListSkeleton />
-      </ScreenContainer>
-    );
-  }
+  const renderContent = () => {
+    // Show skeleton only on initial load without any data
+    if (isLoading && products.length === 0) {
+      return <ProductListSkeleton />;
+    }
 
-  if (error) {
-    return (
-      <ScreenContainer withPadding={false}>
-        <View style={styles.errorContainer}>
-          <FontAwesome
-            name="exclamation-circle"
-            size={ms(48)}
-            color={theme.error}
-          />
-          <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
-          <Text style={styles.errorMessage}>
-            Unable to load products. Please try again.
-          </Text>
-          <Pressable style={styles.retryButton} onPress={() => refetch()}>
-            <Text style={styles.retryButtonText}>Retry</Text>
-          </Pressable>
-        </View>
-      </ScreenContainer>
-    );
-  }
+    // Show error state
+    if (error) {
+      return (
+        <ErrorState
+          title="Oops! Something went wrong"
+          message="Unable to load products. Please try again."
+          onRetry={() => refetch()}
+        />
+      );
+    }
 
-  if (!products || products.length === 0) {
-    return (
-      <ScreenContainer withPadding={false}>
-        <View style={styles.emptyContainer}>
-          <FontAwesome
-            name="shopping-basket"
-            size={ms(64)}
-            color={theme.disabled}
-          />
-          <Text style={styles.emptyTitle}>No Products Found</Text>
-          <Text style={styles.emptyMessage}>
-            Check back later for new arrivals
-          </Text>
-        </View>
-      </ScreenContainer>
-    );
-  }
+    // Show empty state
+    if (!products || products.length === 0) {
+      return (
+        <EmptyState
+          icon="shopping-basket"
+          title="No Products Found"
+          message="Check back later for new arrivals"
+        />
+      );
+    }
 
-  return (
-    <ScreenContainer withPadding={false} edges={['top', 'left', 'right']}>
+    // Show products list
+    return (
       <FlatList
         data={products}
         renderItem={({ item }) => (
@@ -232,6 +194,12 @@ export default function HomeScreen() {
           />
         }
       />
+    );
+  };
+
+  return (
+    <ScreenContainer withPadding={false} edges={['top', 'left', 'right']}>
+      {renderContent()}
     </ScreenContainer>
   );
 }
@@ -303,11 +271,12 @@ const styles = StyleSheet.create({
   },
   categoriesContainer: {
     marginBottom: ms(Spacing.xl),
-    // paddingHorizontal: wp(Spacing.lg),
+    maxHeight: ms(60),
   },
   categoriesContent: {
     flexDirection: 'row',
     gap: ms(Spacing.md),
+    paddingRight: wp(Spacing.lg),
   },
   categoryChip: {
     paddingHorizontal: wp(Spacing.xl),
@@ -355,56 +324,5 @@ const styles = StyleSheet.create({
     fontSize: ms(Typography.sizes.sm),
     color: theme.textSecondary,
     fontWeight: Typography.weights.medium,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: ms(Spacing.xxxl),
-    backgroundColor: theme.background,
-  },
-  errorTitle: {
-    fontSize: ms(Typography.sizes.xl),
-    fontWeight: Typography.weights.bold,
-    color: theme.text,
-    marginTop: ms(Spacing.lg),
-    marginBottom: ms(Spacing.sm),
-  },
-  errorMessage: {
-    fontSize: ms(Typography.sizes.sm),
-    color: theme.textSecondary,
-    textAlign: 'center',
-    marginBottom: ms(Spacing.xxl),
-  },
-  retryButton: {
-    paddingHorizontal: wp(Spacing.xxxl),
-    paddingVertical: ms(14),
-    backgroundColor: theme.primary,
-    borderRadius: BorderRadius.md,
-    ...Shadows.sm,
-  },
-  retryButtonText: {
-    fontSize: ms(Typography.sizes.base),
-    fontWeight: Typography.weights.semibold,
-    color: theme.textInverse,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: ms(Spacing.xxxl),
-    backgroundColor: theme.background,
-  },
-  emptyTitle: {
-    fontSize: ms(Typography.sizes.xl),
-    fontWeight: Typography.weights.bold,
-    color: theme.text,
-    marginTop: ms(Spacing.lg),
-    marginBottom: ms(Spacing.sm),
-  },
-  emptyMessage: {
-    fontSize: ms(Typography.sizes.sm),
-    color: theme.textSecondary,
-    textAlign: 'center',
   },
 });
