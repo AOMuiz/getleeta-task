@@ -30,8 +30,6 @@ interface ProductCardProps {
   onPress: () => void;
 }
 
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 const ProductCardComponent: React.FC<ProductCardProps> = ({
   product,
   onPress,
@@ -76,64 +74,66 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <AnimatedPressable
-      style={[styles.container, animatedStyle]}
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: product.image }}
-          style={styles.image}
-          placeholder={{ blurhash }}
-          contentFit="cover"
-        />
-        <Animated.View style={[styles.favoriteButton, favoriteAnimatedStyle]}>
-          <Pressable
-            onPress={handleFavoritePress}
-            hitSlop={8}
-            testID="favorite-button"
-          >
-            <IconSymbol
-              name={isFav ? 'heart.fill' : 'heart'}
-              size={ms(20)}
-              color={isFav ? theme.secondary : theme.textSecondary}
-            />
-          </Pressable>
-        </Animated.View>
-      </View>
+    <Animated.View style={animatedStyle}>
+      <Pressable
+        style={styles.container}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: product.image }}
+            style={styles.image}
+            placeholder={{ blurhash }}
+            contentFit="cover"
+          />
+          <Animated.View style={[styles.favoriteButton, favoriteAnimatedStyle]}>
+            <Pressable
+              onPress={handleFavoritePress}
+              hitSlop={8}
+              testID="favorite-button"
+            >
+              <IconSymbol
+                name={isFav ? 'heart.fill' : 'heart'}
+                size={ms(20)}
+                color={isFav ? theme.secondary : theme.textSecondary}
+              />
+            </Pressable>
+          </Animated.View>
+        </View>
 
-      <View style={styles.content}>
-        <View style={styles.header}>
-          <Text style={styles.category} numberOfLines={1}>
-            {product.category}
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <Text style={styles.category} numberOfLines={1}>
+              {product.category}
+            </Text>
+            <View style={styles.rating}>
+              <IconSymbol name="star.fill" size={ms(14)} color={theme.accent} />
+              <Text style={styles.ratingText}>{product.rating.rate}</Text>
+            </View>
+          </View>
+
+          <Text style={styles.title} numberOfLines={2}>
+            {product.title}
           </Text>
-          <View style={styles.rating}>
-            <IconSymbol name="star.fill" size={ms(14)} color={theme.accent} />
-            <Text style={styles.ratingText}>{product.rating.rate}</Text>
+
+          <View style={styles.footer}>
+            <View>
+              <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+            </View>
+            <Pressable
+              style={styles.addButton}
+              onPress={handleAddToCart}
+              hitSlop={8}
+              testID="add-to-cart-button"
+            >
+              <IconSymbol name="plus" size={ms(16)} color={theme.textInverse} />
+            </Pressable>
           </View>
         </View>
-
-        <Text style={styles.title} numberOfLines={2}>
-          {product.title}
-        </Text>
-
-        <View style={styles.footer}>
-          <View>
-            <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-          </View>
-          <Pressable
-            style={styles.addButton}
-            onPress={handleAddToCart}
-            hitSlop={8}
-            testID="add-to-cart-button"
-          >
-            <IconSymbol name="plus" size={ms(16)} color={theme.textInverse} />
-          </Pressable>
-        </View>
-      </View>
-    </AnimatedPressable>
+      </Pressable>
+    </Animated.View>
   );
 };
 
