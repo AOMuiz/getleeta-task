@@ -23,7 +23,7 @@ export const DEFAULT_GRADIENT = [
   'rgba(255,255,255,0.4)',
   'rgba(255,255,255,0.1)',
   'rgba(255,255,255,0)',
-];
+] as const;
 
 export const DEFAULT_PULSE_CONFIG = {
   animationDuration: 1000,
