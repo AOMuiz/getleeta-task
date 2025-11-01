@@ -184,10 +184,11 @@ onPressOut={() => scale.value = withSpring(1)}
 
 - Beautiful entrance animation on app launch
 - Smooth gradient background with brand colors
-- Rotating and scaling logo animation
+- Rotating and scaling shopping cart icon
 - Text slide-up and fade-in effects
 - Automatic theme adaptation (light/dark)
 - 3-second duration with smooth exit transition
+- E-commerce focused messaging
 
 ### 7. List Performance
 
