@@ -6,11 +6,37 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-// Mock Reanimated
+// Mock React Native Reanimated
 jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
+  const React = require('react');
+  const { View, Text, Image, ScrollView, Pressable } = require('react-native');
+
+  return {
+    default: {
+      createAnimatedComponent: (Component) => Component,
+      View,
+      Text,
+      Image,
+      ScrollView,
+      Pressable,
+    },
+    View,
+    Text,
+    Image,
+    ScrollView,
+    Pressable,
+    useSharedValue: jest.fn(() => ({ value: 0 })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    withSpring: jest.fn((value) => value),
+    withTiming: jest.fn((value) => value),
+    withRepeat: jest.fn((value) => value),
+    Easing: {
+      linear: jest.fn(),
+      ease: jest.fn(),
+      quad: jest.fn(),
+    },
+    createAnimatedComponent: (Component) => Component,
+  };
 });
 
 // Mock Expo modules
@@ -46,4 +72,9 @@ jest.mock('@react-navigation/native', () => ({
 // Mock useColorScheme
 jest.mock('./components/useColorScheme', () => ({
   useColorScheme: () => 'light',
+}));
+
+// Mock FontAwesome icons
+jest.mock('@expo/vector-icons', () => ({
+  FontAwesome: 'FontAwesome',
 }));
