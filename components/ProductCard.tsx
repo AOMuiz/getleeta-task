@@ -1,5 +1,13 @@
+import {
+  BorderRadius,
+  Colors,
+  Shadows,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
 import { Product } from '@/types/api';
+import { ms, wp } from '@/utils/responsive-dimensions';
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -17,7 +25,10 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = (width - 48) / 2; // 2 columns with padding
+const CARD_WIDTH = (width - wp(Spacing.xxxl + Spacing.lg)) / 2; // 2 columns with responsive padding
+
+// Theme colors (light mode)
+const theme = Colors.light;
 
 interface ProductCardProps {
   product: Product;
@@ -90,8 +101,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           >
             <FontAwesome
               name={isFav ? 'heart' : 'heart-o'}
-              size={20}
-              color={isFav ? '#FF6B6B' : '#666'}
+              size={ms(20)}
+              color={isFav ? theme.secondary : theme.textSecondary}
             />
           </Pressable>
         </Animated.View>
@@ -103,7 +114,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.category}
           </Text>
           <View style={styles.rating}>
-            <FontAwesome name="star" size={14} color="#FFC107" />
+            <FontAwesome name="star" size={ms(14)} color={theme.accent} />
             <Text style={styles.ratingText}>{product.rating.rate}</Text>
           </View>
         </View>
@@ -122,7 +133,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             hitSlop={8}
             testID="add-to-cart-button"
           >
-            <FontAwesome name="plus" size={16} color="#fff" />
+            <FontAwesome name="plus" size={ms(16)} color={theme.textInverse} />
           </Pressable>
         </View>
       </View>
@@ -133,20 +144,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 const styles = StyleSheet.create({
   container: {
     width: CARD_WIDTH,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    backgroundColor: theme.surface,
+    borderRadius: BorderRadius.lg,
+    marginBottom: ms(Spacing.lg),
+    ...Shadows.md,
     overflow: 'hidden',
   },
   imageContainer: {
     width: '100%',
-    height: 220,
-    backgroundColor: '#f5f5f5',
+    height: ms(220),
+    backgroundColor: theme.surfaceVariant,
     position: 'relative',
   },
   image: {
@@ -155,51 +162,47 @@ const styles = StyleSheet.create({
   },
   favoriteButton: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#fff',
+    top: ms(Spacing.md),
+    right: ms(Spacing.md),
+    width: ms(40),
+    height: ms(40),
+    borderRadius: BorderRadius.full,
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...Shadows.sm,
   },
   content: {
-    padding: 16,
+    padding: ms(Spacing.lg),
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: ms(Spacing.sm),
   },
   category: {
-    fontSize: 12,
-    color: '#666',
+    fontSize: ms(Typography.sizes.xs),
+    color: theme.textSecondary,
     textTransform: 'capitalize',
     flex: 1,
   },
   rating: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: ms(Spacing.xs),
   },
   ratingText: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '600',
+    fontSize: ms(Typography.sizes.xs),
+    color: theme.textSecondary,
+    fontWeight: Typography.weights.semibold,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 12,
-    lineHeight: 22,
+    fontSize: ms(Typography.sizes.base),
+    fontWeight: Typography.weights.semibold,
+    color: theme.text,
+    marginBottom: ms(Spacing.md),
+    lineHeight: ms(22),
   },
   footer: {
     flexDirection: 'row',
@@ -207,21 +210,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   price: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2D9F5E',
+    fontSize: ms(Typography.sizes.xl),
+    fontWeight: Typography.weights.bold,
+    color: theme.primary,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#2D9F5E',
+    width: ms(44),
+    height: ms(44),
+    borderRadius: BorderRadius.full,
+    backgroundColor: theme.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#2D9F5E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Shadows.md,
   },
 });

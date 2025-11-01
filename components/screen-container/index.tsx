@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/theme';
 import { isIOS } from '@/utils';
 import { hp, wp } from '@/utils/responsive-dimensions';
 import { ReactNode } from 'react';
@@ -38,6 +39,8 @@ export interface ScreenContainerProps {
   // Add keyboard handling
   keyboardShouldAvoidView?: boolean;
   scrollViewProps?: ScrollViewProps;
+  // Theme mode
+  isDark?: boolean;
 }
 
 const ScreenContainer: React.FC<ScreenContainerProps> = ({
@@ -45,13 +48,17 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
   containerStyle,
   contentStyle,
   withPadding = true,
-  paddingHorizontal = 20,
+  paddingHorizontal = 16,
   paddingVertical = 0,
   edges = ['left', 'right', 'top'],
   scrollable = false,
   keyboardShouldAvoidView = false,
   scrollViewProps,
+  backgroundColor,
+  isDark = false,
 }) => {
+  const theme = isDark ? Colors.dark : Colors.light;
+
   // Calculate padding based on props and insets
   const padding = {
     paddingHorizontal: withPadding ? wp(paddingHorizontal) : 0,
@@ -71,11 +78,12 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
 
   return (
     <SafeAreaView
-      style={[styles.screen, containerStyle]}
+      style={[
+        styles.screen,
+        { backgroundColor: backgroundColor || theme.background },
+        containerStyle,
+      ]}
       edges={edges}
-      // Add these two props to ensure full space utilization
-      // pointerEvents="box-none"
-      // mode="margin"
     >
       <KeyboardWrapper
         style={styles.keyboardWrapper}
@@ -83,7 +91,6 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
       >
         <ContentWrapper
           style={[styles.content, padding, contentStyle]}
-          // bounces={false}
           showsVerticalScrollIndicator={false}
           {...(scrollable && scrollViewProps)}
         >
@@ -97,7 +104,6 @@ const ScreenContainer: React.FC<ScreenContainerProps> = ({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: 'white',
   },
   content: {
     flex: 1,

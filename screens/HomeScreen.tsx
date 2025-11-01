@@ -1,6 +1,15 @@
 import { ProductCard } from '@/components/ProductCard';
 import { ProductListSkeleton } from '@/components/SkeletonLoader';
+import ScreenContainer from '@/components/screen-container';
+import {
+  BorderRadius,
+  Colors,
+  Shadows,
+  Spacing,
+  Typography,
+} from '@/constants/theme';
 import { Product } from '@/types/api';
+import { ms, wp } from '@/utils/responsive-dimensions';
 import { FontAwesome } from '@expo/vector-icons';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -17,6 +26,9 @@ import {
 } from 'react-native';
 
 const ITEMS_PER_PAGE = 10;
+
+// Theme colors (light mode)
+const theme = Colors.light;
 
 const fetchProductsPage = async ({ pageParam = 0 }) => {
   const { data } = await axios.get<Product[]>(
@@ -91,14 +103,14 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>Special For You</Text>
         </View>
         <Pressable style={styles.notificationButton}>
-          <FontAwesome name="bell" size={24} color="#1a1a1a" />
+          <FontAwesome name="bell" size={ms(24)} color={theme.text} />
           <View style={styles.notificationBadge} />
         </Pressable>
       </View>
 
       {/* Search Bar */}
       <Pressable style={styles.searchBar}>
-        <FontAwesome name="search" size={20} color="#666" />
+        <FontAwesome name="search" size={ms(20)} color={theme.textSecondary} />
         <Text style={styles.searchPlaceholder}>Search for food</Text>
       </Pressable>
 
@@ -139,25 +151,29 @@ export default function HomeScreen() {
 
     return (
       <View style={styles.loadingFooter}>
-        <ActivityIndicator size="small" color="#2D9F5E" />
+        <ActivityIndicator size="small" color={theme.primary} />
         <Text style={styles.loadingText}>Loading more...</Text>
       </View>
     );
   };
 
-  const renderEmpty = () => {
-    if (isLoading) {
-      return (
-        <View style={styles.container}>
-          <ProductListSkeleton />
-        </View>
-      );
-    }
+  if (isLoading && !data) {
+    return (
+      <ScreenContainer withPadding={false}>
+        <ProductListSkeleton />
+      </ScreenContainer>
+    );
+  }
 
-    if (error) {
-      return (
+  if (error) {
+    return (
+      <ScreenContainer withPadding={false}>
         <View style={styles.errorContainer}>
-          <FontAwesome name="exclamation-circle" size={48} color="#FF6B6B" />
+          <FontAwesome
+            name="exclamation-circle"
+            size={ms(48)}
+            color={theme.error}
+          />
           <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
           <Text style={styles.errorMessage}>
             Unable to load products. Please try again.
@@ -166,57 +182,30 @@ export default function HomeScreen() {
             <Text style={styles.retryButtonText}>Retry</Text>
           </Pressable>
         </View>
-      );
-    }
-
-    return (
-      <View style={styles.emptyContainer}>
-        <FontAwesome name="shopping-basket" size={64} color="#ccc" />
-        <Text style={styles.emptyTitle}>No Products Found</Text>
-        <Text style={styles.emptyMessage}>
-          Check back later for new arrivals
-        </Text>
-      </View>
-    );
-  };
-
-  if (isLoading && !data) {
-    return (
-      <View style={styles.container}>
-        <ProductListSkeleton />
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <FontAwesome name="exclamation-circle" size={48} color="#FF6B6B" />
-        <Text style={styles.errorTitle}>Oops! Something went wrong</Text>
-        <Text style={styles.errorMessage}>
-          Unable to load products. Please try again.
-        </Text>
-        <Pressable style={styles.retryButton} onPress={() => refetch()}>
-          <Text style={styles.retryButtonText}>Retry</Text>
-        </Pressable>
-      </View>
+      </ScreenContainer>
     );
   }
 
   if (!products || products.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <FontAwesome name="shopping-basket" size={64} color="#ccc" />
-        <Text style={styles.emptyTitle}>No Products Found</Text>
-        <Text style={styles.emptyMessage}>
-          Check back later for new arrivals
-        </Text>
-      </View>
+      <ScreenContainer withPadding={false}>
+        <View style={styles.emptyContainer}>
+          <FontAwesome
+            name="shopping-basket"
+            size={ms(64)}
+            color={theme.disabled}
+          />
+          <Text style={styles.emptyTitle}>No Products Found</Text>
+          <Text style={styles.emptyMessage}>
+            Check back later for new arrivals
+          </Text>
+        </View>
+      </ScreenContainer>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ScreenContainer withPadding={false} edges={['top', 'left', 'right']}>
       <FlatList
         data={products}
         renderItem={({ item }) => (
@@ -238,23 +227,19 @@ export default function HomeScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#2D9F5E"
-            colors={['#2D9F5E']}
+            tintColor={theme.primary}
+            colors={[theme.primary]}
           />
         }
       />
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
   listContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
+    paddingHorizontal: wp(Spacing.lg),
+    paddingBottom: ms(100),
   },
   row: {
     justifyContent: 'space-between',
@@ -264,162 +249,162 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 20,
-    backgroundColor: '#F8F9FA',
+    // paddingTop: ms(60),
+    paddingBottom: ms(Spacing.xl),
+    // paddingHorizontal: wp(Spacing.lg),
+    backgroundColor: theme.background,
   },
   greeting: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+    fontSize: ms(Typography.sizes.sm),
+    color: theme.textSecondary,
+    marginBottom: ms(Spacing.xs),
+    fontWeight: Typography.weights.regular,
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontSize: ms(Typography.sizes.xxl),
+    fontWeight: Typography.weights.bold,
+    color: theme.text,
   },
   notificationButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#fff',
+    width: ms(48),
+    height: ms(48),
+    borderRadius: BorderRadius.full,
+    backgroundColor: theme.surface,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    ...Shadows.sm,
   },
   notificationBadge: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FF6B6B',
+    top: ms(12),
+    right: ms(12),
+    width: ms(8),
+    height: ms(8),
+    borderRadius: BorderRadius.full,
+    backgroundColor: theme.error,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    marginVertical: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 12,
-    gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    backgroundColor: theme.surface,
+    // marginHorizontal: wp(Spacing.lg),
+    marginBottom: ms(Spacing.lg),
+    paddingHorizontal: wp(Spacing.lg),
+    paddingVertical: ms(14),
+    borderRadius: BorderRadius.md,
+    gap: ms(Spacing.md),
+    ...Shadows.sm,
   },
   searchPlaceholder: {
-    fontSize: 16,
-    color: '#999',
+    fontSize: ms(Typography.sizes.base),
+    color: theme.textTertiary,
+    fontWeight: Typography.weights.regular,
   },
   categoriesContainer: {
-    marginBottom: 20,
+    marginBottom: ms(Spacing.xl),
+    // paddingHorizontal: wp(Spacing.lg),
   },
   categoriesContent: {
     flexDirection: 'row',
-    gap: 12,
+    gap: ms(Spacing.md),
   },
   categoryChip: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: '#fff',
+    paddingHorizontal: wp(Spacing.xl),
+    paddingVertical: ms(10),
+    borderRadius: BorderRadius.xl,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: '#E1E9EE',
+    borderColor: theme.border,
   },
   categoryChipActive: {
-    backgroundColor: '#2D9F5E',
-    borderColor: '#2D9F5E',
+    backgroundColor: theme.primary,
+    borderColor: theme.primary,
   },
   categoryChipText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
+    fontSize: ms(Typography.sizes.sm),
+    fontWeight: Typography.weights.semibold,
+    color: theme.textSecondary,
   },
   categoryChipTextActive: {
-    color: '#fff',
+    color: theme.textInverse,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: ms(Spacing.lg),
+    // paddingHorizontal: wp(Spacing.lg),
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
+    fontSize: ms(Typography.sizes.xl),
+    fontWeight: Typography.weights.bold,
+    color: theme.text,
   },
   seeAll: {
-    fontSize: 14,
-    color: '#2D9F5E',
-    fontWeight: '600',
+    fontSize: ms(Typography.sizes.sm),
+    color: theme.primary,
+    fontWeight: Typography.weights.semibold,
   },
   loadingFooter: {
-    paddingVertical: 20,
+    paddingVertical: ms(Spacing.xl),
     alignItems: 'center',
-    gap: 8,
+    gap: ms(Spacing.sm),
   },
   loadingText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: ms(Typography.sizes.sm),
+    color: theme.textSecondary,
+    fontWeight: Typography.weights.medium,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
-    backgroundColor: '#F8F9FA',
+    padding: ms(Spacing.xxxl),
+    backgroundColor: theme.background,
   },
   errorTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginTop: 16,
-    marginBottom: 8,
+    fontSize: ms(Typography.sizes.xl),
+    fontWeight: Typography.weights.bold,
+    color: theme.text,
+    marginTop: ms(Spacing.lg),
+    marginBottom: ms(Spacing.sm),
   },
   errorMessage: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: ms(Typography.sizes.sm),
+    color: theme.textSecondary,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: ms(Spacing.xxl),
   },
   retryButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    backgroundColor: '#2D9F5E',
-    borderRadius: 12,
+    paddingHorizontal: wp(Spacing.xxxl),
+    paddingVertical: ms(14),
+    backgroundColor: theme.primary,
+    borderRadius: BorderRadius.md,
+    ...Shadows.sm,
   },
   retryButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
+    fontSize: ms(Typography.sizes.base),
+    fontWeight: Typography.weights.semibold,
+    color: theme.textInverse,
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 32,
-    backgroundColor: '#F8F9FA',
+    padding: ms(Spacing.xxxl),
+    backgroundColor: theme.background,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginTop: 16,
-    marginBottom: 8,
+    fontSize: ms(Typography.sizes.xl),
+    fontWeight: Typography.weights.bold,
+    color: theme.text,
+    marginTop: ms(Spacing.lg),
+    marginBottom: ms(Spacing.sm),
   },
   emptyMessage: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: ms(Typography.sizes.sm),
+    color: theme.textSecondary,
     textAlign: 'center',
   },
 });

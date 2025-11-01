@@ -4,7 +4,7 @@ import React from 'react';
 
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
-import Colors from '@/constants/Colors';
+import { Colors as ThemeColors } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -19,16 +19,22 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const cartItemsCount = useStore((state) => state.getCartItemsCount());
 
+  // Use theme colors based on color scheme
+  const theme = colorScheme === 'dark' ? ThemeColors.dark : ThemeColors.light;
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: useClientOnlyValue(false, true),
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.textSecondary,
         tabBarStyle: {
+          backgroundColor: theme.surface,
+          borderTopColor: theme.border,
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,
         },
+        headerShown: useClientOnlyValue(false, true),
       }}
     >
       <Tabs.Screen
