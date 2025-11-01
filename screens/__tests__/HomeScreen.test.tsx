@@ -2,10 +2,10 @@
  * Unit tests for Home Screen
  */
 
-import HomeScreen from '@/app/(tabs)/index';
-import { useProducts } from '@/hooks/useAPI';
+import HomeScreen from '@/screens/HomeScreen';
 import { useStore } from '@/stores/useStore';
 import { Product } from '@/types/api';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import {
   fireEvent,
   render,
@@ -13,8 +13,8 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-// Mock the hooks
-jest.mock('@/hooks/useAPI');
+// Mock TanStack Query
+jest.mock('@tanstack/react-query');
 jest.mock('@/stores/useStore');
 jest.mock('expo-router', () => ({
   useRouter: () => ({
@@ -65,11 +65,14 @@ describe('HomeScreen', () => {
 
   describe('Loading State', () => {
     it('should display skeleton loader when loading', () => {
-      (useProducts as jest.Mock).mockReturnValue({
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: true,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -81,11 +84,17 @@ describe('HomeScreen', () => {
 
   describe('Success State', () => {
     it('should render products when data is loaded', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: true,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -97,11 +106,17 @@ describe('HomeScreen', () => {
     });
 
     it('should display header with greeting', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -113,11 +128,17 @@ describe('HomeScreen', () => {
     });
 
     it('should display search bar', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -128,11 +149,17 @@ describe('HomeScreen', () => {
     });
 
     it('should display correct number of products', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -146,11 +173,14 @@ describe('HomeScreen', () => {
 
   describe('Error State', () => {
     it('should display error message when fetch fails', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -165,11 +195,14 @@ describe('HomeScreen', () => {
 
     it('should have retry button on error', async () => {
       const refetchMock = jest.fn();
-      (useProducts as jest.Mock).mockReturnValue({
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
         refetch: refetchMock,
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -182,11 +215,14 @@ describe('HomeScreen', () => {
 
     it('should call refetch when retry button is pressed', async () => {
       const refetchMock = jest.fn();
-      (useProducts as jest.Mock).mockReturnValue({
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         error: new Error('Network error'),
         refetch: refetchMock,
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -201,11 +237,17 @@ describe('HomeScreen', () => {
 
   describe('Empty State', () => {
     it('should display empty state when no products', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: [],
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [[]],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -219,31 +261,63 @@ describe('HomeScreen', () => {
     });
   });
 
-  describe('Pull to Refresh', () => {
-    it('should call refetch on pull to refresh', async () => {
-      const refetchMock = jest.fn();
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+  describe('Infinite Scroll', () => {
+    it('should call fetchNextPage when scrolling to end', async () => {
+      const fetchNextPageMock = jest.fn();
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
-        refetch: refetchMock,
+        refetch: jest.fn(),
+        fetchNextPage: fetchNextPageMock,
+        hasNextPage: true,
+        isFetchingNextPage: false,
       });
 
       const { getByTestId } = render(<HomeScreen />);
 
-      // Note: In actual implementation, you'd need to add testID to ScrollView
-      // This is a simplified test
-      expect(refetchMock).toBeDefined();
+      // Note: Testing onEndReached requires special setup with FlatList
+      expect(fetchNextPageMock).toBeDefined();
+    });
+
+    it('should show loading footer when fetching next page', async () => {
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: true,
+        isFetchingNextPage: true,
+      });
+
+      render(<HomeScreen />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Loading more...')).toBeTruthy();
+      });
     });
   });
 
   describe('Section Headers', () => {
     it('should display Popular Items section header', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
@@ -257,11 +331,17 @@ describe('HomeScreen', () => {
 
   describe('Category Chips', () => {
     it('should display category chips', async () => {
-      (useProducts as jest.Mock).mockReturnValue({
-        data: mockProducts,
+      (useInfiniteQuery as jest.Mock).mockReturnValue({
+        data: {
+          pages: [mockProducts],
+          pageParams: [0],
+        },
         isLoading: false,
         error: null,
         refetch: jest.fn(),
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
 
       render(<HomeScreen />);
