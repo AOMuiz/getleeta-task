@@ -16,6 +16,7 @@ import { useProductsList } from '@/hooks/useProductsList';
 import { Product } from '@/types/api';
 import { ms, wp } from '@/utils/responsive-dimensions';
 import { useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -54,6 +55,17 @@ export default function HomeScreen() {
       params: { id: product.id.toString() },
     });
   };
+
+  // Memoize renderItem to prevent unnecessary re-renders
+  const renderItem = useCallback(
+    ({ item }: { item: Product }) => (
+      <ProductCard product={item} onPress={() => handleProductPress(item)} />
+    ),
+    [] // handleProductPress is stable, so empty deps array is fine
+  );
+
+  // Memoize keyExtractor
+  const keyExtractor = useCallback((item: Product) => item.id.toString(), []);
 
   const renderHeader = () => (
     <>
@@ -171,13 +183,8 @@ export default function HomeScreen() {
     return (
       <FlatList
         data={isLoading && products.length === 0 ? [] : products}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onPress={() => handleProductPress(item)}
-          />
-        )}
-        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
         numColumns={2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
@@ -197,6 +204,11 @@ export default function HomeScreen() {
             colors={[theme.primary]}
           />
         }
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={10}
+        windowSize={10}
       />
     );
   };

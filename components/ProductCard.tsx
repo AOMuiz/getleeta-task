@@ -32,7 +32,7 @@ interface ProductCardProps {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+const ProductCardComponent: React.FC<ProductCardProps> = ({
   product,
   onPress,
 }) => {
@@ -136,6 +136,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </AnimatedPressable>
   );
 };
+
+// Memoized ProductCard with custom comparison for better performance
+export const ProductCard = React.memo(
+  ProductCardComponent,
+  (prevProps, nextProps) => {
+    // Only re-render if product id or onPress reference changed
+    // This prevents unnecessary re-renders when parent updates
+    return (
+      prevProps.product.id === nextProps.product.id &&
+      prevProps.onPress === nextProps.onPress
+    );
+  }
+);
 
 const styles = StyleSheet.create({
   container: {

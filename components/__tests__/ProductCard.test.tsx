@@ -50,11 +50,13 @@ describe('ProductCard', () => {
 
     it('should render product image', () => {
       const onPressMock = jest.fn();
-      const { getByTestId, UNSAFE_getByType } = render(
+      const { UNSAFE_getByType } = render(
         <ProductCard product={mockProduct} onPress={onPressMock} />
       );
 
-      const image = UNSAFE_getByType(require('react-native').Image);
+      // Using expo-image instead of react-native Image
+      const Image = require('expo-image').Image;
+      const image = UNSAFE_getByType(Image);
       expect(image.props.source.uri).toBe('https://via.placeholder.com/150');
     });
   });
