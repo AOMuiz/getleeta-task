@@ -25,6 +25,7 @@ jest.mock('@/stores/useStore', () => ({
     addToFavorites: jest.fn(),
     removeFromFavorites: jest.fn(),
     isFavorite: jest.fn(() => false),
+    getProductQuantityInCart: jest.fn(() => 0),
   })),
 }));
 

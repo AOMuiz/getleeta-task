@@ -5,6 +5,7 @@ import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Colors as ThemeColors } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
+import { hp } from '@/utils/responsive-dimensions';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -21,9 +22,8 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.surface,
           borderTopColor: theme.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          height: hp(60),
+          paddingVertical: hp(8),
         },
         headerShown: useClientOnlyValue(false, true),
       }}

@@ -1,7 +1,7 @@
 import { useProduct } from '@/hooks/useAPI';
 import { useStore } from '@/stores/useStore';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useSharedValue, withSpring } from 'react-native-reanimated';
 
@@ -9,11 +9,26 @@ export const useProductDetail = (productId: string) => {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { addToCart, addToFavorites, removeFromFavorites, isFavorite } =
-    useStore();
+  const {
+    addToCart,
+    addToFavorites,
+    removeFromFavorites,
+    isFavorite,
+    getProductQuantityInCart,
+  } = useStore();
 
   // Fetch product data using the API hook
   const { data: product, isLoading, error, refetch } = useProduct(productId);
+
+  // Get current quantity in cart
+  const cartQuantity = product ? getProductQuantityInCart(product.id) : 0;
+
+  // Initialize quantity from cart when product loads
+  useEffect(() => {
+    if (product && cartQuantity > 0) {
+      setQuantity(cartQuantity);
+    }
+  }, [product, cartQuantity]);
 
   // Animation values
   const imageScale = useSharedValue(1);
@@ -94,6 +109,7 @@ export const useProductDetail = (productId: string) => {
     quantity,
     totalPrice,
     isAddingToCart,
+    cartQuantity, // Current quantity in cart
 
     // Actions
     handleFavoritePress,

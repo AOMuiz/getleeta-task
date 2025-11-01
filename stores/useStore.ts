@@ -22,6 +22,7 @@ interface StoreState {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
+  getProductQuantityInCart: (productId: number) => number;
 
   // Favorites State
   favorites: Product[];
@@ -96,6 +97,11 @@ export const useStore = create<StoreState>()(
 
       getCartItemsCount: () => {
         return get().cart.reduce((count, item) => count + item.quantity, 0);
+      },
+
+      getProductQuantityInCart: (productId) => {
+        const item = get().cart.find((item) => item.product.id === productId);
+        return item ? item.quantity : 0;
       },
 
       // Favorites State

@@ -1,3 +1,4 @@
+import { IconSymbol } from '@/components/IconSymbol';
 import { ErrorState, LoadingState } from '@/components/StateViews';
 import ScreenContainer from '@/components/screen-container';
 import {
@@ -9,7 +10,6 @@ import {
 } from '@/constants/theme';
 import { useProductDetail } from '@/hooks/useProductDetail';
 import { ms, wp } from '@/utils/responsive-dimensions';
-import { FontAwesome } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
@@ -45,6 +45,7 @@ export default function ProductDetailScreen() {
     quantity,
     totalPrice,
     isAddingToCart,
+    cartQuantity,
     handleFavoritePress,
     handleAddToCart,
     incrementQuantity,
@@ -101,7 +102,11 @@ export default function ProductDetailScreen() {
               style={styles.headerButton}
               onPress={() => router.back()}
             >
-              <FontAwesome name="arrow-left" size={ms(20)} color={theme.text} />
+              <IconSymbol
+                name="chevron.left"
+                size={ms(20)}
+                color={theme.text}
+              />
             </Pressable>
           </Animated.View>
 
@@ -113,8 +118,8 @@ export default function ProductDetailScreen() {
               style={styles.headerButton}
               onPress={handleFavoritePress}
             >
-              <FontAwesome
-                name={isFav ? 'heart' : 'heart-o'}
+              <IconSymbol
+                name={isFav ? 'heart.fill' : 'heart'}
                 size={ms(24)}
                 color={isFav ? theme.secondary : theme.text}
               />
@@ -148,13 +153,25 @@ export default function ProductDetailScreen() {
               </Text>
             </View>
             <View style={styles.ratingContainer}>
-              <FontAwesome name="star" size={ms(18)} color={theme.accent} />
+              <IconSymbol name="star.fill" size={ms(18)} color={theme.accent} />
               <Text style={styles.ratingText}>{product.rating.rate}</Text>
               <Text style={styles.ratingCount}>
                 ({product.rating.count} reviews)
               </Text>
             </View>
           </View>
+
+          {/* In Cart Badge */}
+          {cartQuantity > 0 && (
+            <View style={styles.cartBadge}>
+              <IconSymbol
+                name="cart.fill"
+                size={ms(16)}
+                color={theme.primary}
+              />
+              <Text style={styles.cartBadgeText}>{cartQuantity} in cart</Text>
+            </View>
+          )}
 
           {/* Title */}
           <Text style={styles.title}>{product.title}</Text>
@@ -180,9 +197,9 @@ export default function ProductDetailScreen() {
                 onPress={decrementQuantity}
                 disabled={quantity === 1}
               >
-                <FontAwesome
-                  name="minus"
-                  size={ms(16)}
+                <IconSymbol
+                  name="minus.circle.fill"
+                  size={ms(24)}
                   color={quantity === 1 ? theme.disabled : theme.text}
                 />
               </Pressable>
@@ -193,7 +210,11 @@ export default function ProductDetailScreen() {
                 style={styles.quantityButton}
                 onPress={incrementQuantity}
               >
-                <FontAwesome name="plus" size={ms(16)} color={theme.text} />
+                <IconSymbol
+                  name="plus.circle.fill"
+                  size={ms(24)}
+                  color={theme.primary}
+                />
               </Pressable>
             </View>
           </View>
@@ -233,12 +254,14 @@ export default function ProductDetailScreen() {
             <ActivityIndicator size="small" color={theme.textInverse} />
           ) : (
             <>
-              <FontAwesome
-                name="shopping-cart"
+              <IconSymbol
+                name="cart.fill"
                 size={ms(20)}
                 color={theme.textInverse}
               />
-              <Text style={styles.addToCartText}>Add to Cart</Text>
+              <Text style={styles.addToCartText}>
+                {cartQuantity > 0 ? 'Update Cart' : 'Add to Cart'}
+              </Text>
             </>
           )}
         </AnimatedPressable>
@@ -321,6 +344,22 @@ const styles = StyleSheet.create({
   ratingCount: {
     fontSize: ms(Typography.sizes.sm),
     color: theme.textSecondary,
+  },
+  cartBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: ms(Spacing.xs),
+    backgroundColor: theme.primary + '15',
+    paddingHorizontal: wp(Spacing.md),
+    paddingVertical: ms(6),
+    borderRadius: BorderRadius.md,
+    marginBottom: ms(Spacing.md),
+    alignSelf: 'flex-start',
+  },
+  cartBadgeText: {
+    fontSize: ms(Typography.sizes.sm),
+    fontWeight: Typography.weights.semibold,
+    color: theme.primary,
   },
   title: {
     fontSize: ms(Typography.sizes.xxl),
