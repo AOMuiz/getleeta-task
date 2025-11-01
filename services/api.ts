@@ -3,29 +3,10 @@
  * Documentation: https://fakestoreapi.com/docs
  */
 
+import { Endpoints } from '@/config/endpoints';
 import type { Cart, Product } from '@/types/api';
-import axios, { AxiosError } from 'axios';
-
-const API_BASE_URL = 'https://fakestoreapi.com';
-
-// Create axios instance with default config
-export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 10000, // 10 seconds
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add response interceptor for error handling
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    // Log errors for debugging
-    console.error('API Error:', error.message);
-    return Promise.reject(error);
-  }
-);
+import axios from 'axios';
+import { apiClient } from './api-client';
 
 // Product API Calls
 /**
@@ -34,7 +15,9 @@ apiClient.interceptors.response.use(
  */
 export const fetchProducts = async (limit?: number): Promise<Product[]> => {
   try {
-    const url = limit ? `/products?limit=${limit}` : '/products';
+    const url = limit
+      ? Endpoints.products.withLimit(limit)
+      : Endpoints.products.all;
     const { data } = await apiClient.get<Product[]>(url);
     return data;
   } catch (error) {
@@ -52,7 +35,7 @@ export const fetchProducts = async (limit?: number): Promise<Product[]> => {
  */
 export const fetchProduct = async (id: number): Promise<Product> => {
   try {
-    const { data } = await apiClient.get<Product>(`/products/${id}`);
+    const { data } = await apiClient.get<Product>(Endpoints.products.byId(id));
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -69,7 +52,9 @@ export const fetchProduct = async (id: number): Promise<Product> => {
  */
 export const fetchCategories = async (): Promise<string[]> => {
   try {
-    const { data } = await apiClient.get<string[]>('/products/categories');
+    const { data } = await apiClient.get<string[]>(
+      Endpoints.products.categories
+    );
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -89,7 +74,7 @@ export const fetchProductsByCategory = async (
 ): Promise<Product[]> => {
   try {
     const { data } = await apiClient.get<Product[]>(
-      `/products/category/${category}`
+      Endpoints.products.byCategory(category)
     );
     return data;
   } catch (error) {
@@ -109,7 +94,7 @@ export const fetchProductsByCategory = async (
  */
 export const fetchCarts = async (): Promise<Cart[]> => {
   try {
-    const { data } = await apiClient.get<Cart[]>('/carts');
+    const { data } = await apiClient.get<Cart[]>(Endpoints.carts.all);
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
@@ -124,7 +109,9 @@ export const fetchCarts = async (): Promise<Cart[]> => {
  */
 export const fetchUserCart = async (userId: number): Promise<Cart[]> => {
   try {
-    const { data } = await apiClient.get<Cart[]>(`/carts/user/${userId}`);
+    const { data } = await apiClient.get<Cart[]>(
+      Endpoints.carts.byUser(userId)
+    );
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {

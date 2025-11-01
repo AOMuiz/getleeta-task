@@ -99,6 +99,47 @@ const { data, isLoading, isError, error, refetch } = useQuery({
 - `/products/category/{category}` - Products by category
 - `/carts` - Shopping carts data
 
+## 🏛️ Architecture
+
+### API Layer (Three-Tier)
+
+1. **`/config/endpoints.ts`** - Centralized endpoint definitions
+
+   - All API URLs organized by resource (products, carts, users)
+   - Type-safe endpoint functions
+   - Single source of truth for API routes
+
+2. **`/services/api-client.ts`** - HTTP client configuration
+
+   - Axios instance with base URL and timeout
+   - Request/response interceptors
+   - Error handling and logging
+
+3. **`/services/api.ts`** - API business logic
+   - Typed API functions (fetchProducts, fetchProduct, etc.)
+   - Uses endpoints from config
+   - Error transformation and handling
+
+### State Management (Two-State Pattern)
+
+1. **Server State** (TanStack Query via `/hooks/useAPI.ts`)
+
+   - Product data, categories, carts
+   - Automatic caching and background updates
+   - Loading/error states built-in
+
+2. **Client State** (Zustand via `/stores/useStore.ts`)
+   - Shopping cart management
+   - Favorites/wishlist
+   - UI state (filters, search, sorting)
+   - Persisted to AsyncStorage
+
+### Data Flow
+
+```
+Component → useProducts() → fetchProducts() → apiClient.get() → Endpoints.products.all → API
+```
+
 ## 🏗️ Project Structure
 
 ```
@@ -115,17 +156,26 @@ const { data, isLoading, isError, error, refetch } = useQuery({
 │   ├── ui/               # UI components (buttons, cards, etc.)
 │   ├── loading/          # Loading states & skeletons
 │   └── errors/           # Error components
+├── config/               # Configuration files
+│   ├── endpoints.ts      # API endpoint definitions
+│   └── index.ts          # Config exports
 ├── hooks/                # Custom hooks
-│   ├── useAPI.ts         # API fetching hooks
-│   └── useAnimations.ts  # Animation hooks
-├── services/             # API services
-│   ├── api.ts            # Fake Store API client (Axios)
+│   ├── useAPI.ts         # TanStack Query hooks for API
+│   └── useAnimations.ts  # Animation hooks (future)
+├── services/             # API & HTTP layer
+│   ├── api-client.ts     # Axios instance + interceptors
+│   ├── api.ts            # API functions (fetchProducts, etc.)
+│   ├── interceptors.ts   # Request/response interceptors
 │   └── queryClient.ts    # TanStack Query configuration
 ├── stores/               # Zustand state management
-│   └── useStore.ts       # Global store (cart, favorites, UI state)
+│   └── useStore.ts       # Global store (cart, favorites, UI)
 ├── types/                # TypeScript type definitions
-├── constants/            # App constants & theme
+│   ├── api.ts            # API-related types
+│   └── index.ts          # Type exports
+├── constants/            # App constants
+│   └── theme.ts          # Theme tokens (colors, spacing, etc.)
 └── __tests__/           # Test files
+    └── example.test.tsx  # Example tests
 ```
 
 ## 💻 Installation & Setup
@@ -247,6 +297,48 @@ npm test -- --coverage
 - ✅ **Loading/Error/Empty states** for better UX
 - ✅ **Pull-to-refresh** functionality
 - ✅ **Dark theme** with consistent design system
+- ✅ **Centralized endpoints** configuration
+- ✅ **Two-state architecture** (server + client state)
+
+## 📚 Available Hooks
+
+### API Hooks (TanStack Query)
+
+Located in `/hooks/useAPI.ts`:
+
+```typescript
+// Fetch all products (with optional limit)
+const { data, isLoading, isError, refetch } = useProducts(10);
+
+// Fetch single product by ID
+const { data: product } = useProduct(5);
+
+// Fetch all categories
+const { data: categories } = useCategories();
+
+// Fetch products by category
+const { data: products } = useProductsByCategory('electronics');
+```
+
+### Store Hooks (Zustand)
+
+Located in `/stores/useStore.ts`:
+
+```typescript
+// Cart management
+const { cart, addToCart, removeFromCart, clearCart } = useStore();
+const itemsCount = useStore((state) => state.getCartItemsCount());
+const total = useStore((state) => state.getCartTotal());
+
+// Favorites
+const { favorites, addToFavorites, removeFromFavorites } = useStore();
+const isFavorite = useStore((state) => state.isFavorite(productId));
+
+// UI state
+const { selectedCategory, setSelectedCategory } = useStore();
+const { searchQuery, setSearchQuery } = useStore();
+const { sortBy, setSortBy } = useStore();
+```
 
 ## ⚠️ Known Limitations & Trade-offs
 
