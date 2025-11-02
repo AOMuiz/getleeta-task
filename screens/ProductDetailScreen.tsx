@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@/constants/theme';
 import { useProductDetail } from '@/hooks/useProductDetail';
+import { isIOS } from '@/utils';
 import { ms, wp } from '@/utils/responsive-dimensions';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
@@ -89,7 +90,7 @@ export default function ProductDetailScreen() {
   }
 
   return (
-    <ScreenContainer withPadding={false} edges={['bottom']}>
+    <ScreenContainer withPadding={false} edges={['top', 'bottom']}>
       <ScrollView
         style={styles.container}
         showsVerticalScrollIndicator={false}
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: wp(Spacing.lg),
-    paddingTop: ms(Spacing.xl),
+    paddingTop: isIOS() ? ms(Spacing.xl) : 0,
     paddingBottom: ms(Spacing.md),
     backgroundColor: theme.background,
   },
