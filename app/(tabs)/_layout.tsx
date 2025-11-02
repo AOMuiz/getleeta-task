@@ -1,10 +1,12 @@
 import { Tabs } from 'expo-router';
 
+import CartTabIcon from '@/components/CartTabIcon';
 import { IconSymbol } from '@/components/IconSymbol';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Colors as ThemeColors } from '@/constants/theme';
 import { useStore } from '@/stores/useStore';
+import { ms } from '@/utils/responsive-dimensions';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -32,7 +34,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
-            <IconSymbol name="house.fill" size={24} color={color} />
+            <IconSymbol name="house.fill" size={ms(24)} color={color} />
           ),
           headerShown: false,
         }}
@@ -42,7 +44,11 @@ export default function TabLayout() {
         options={{
           title: 'Menu',
           tabBarIcon: ({ color }) => (
-            <IconSymbol name="square.grid.2x2.fill" size={24} color={color} />
+            <IconSymbol
+              name="square.grid.2x2.fill"
+              size={ms(24)}
+              color={color}
+            />
           ),
           headerShown: false,
         }}
@@ -52,9 +58,8 @@ export default function TabLayout() {
         options={{
           title: 'Cart',
           tabBarIcon: ({ color }) => (
-            <IconSymbol name="cart.fill" size={24} color={color} />
+            <CartTabIcon color={color} count={cartItemsCount} />
           ),
-          tabBarBadge: cartItemsCount > 0 ? cartItemsCount : undefined,
           headerShown: false,
         }}
       />
@@ -63,7 +68,7 @@ export default function TabLayout() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color }) => (
-            <IconSymbol name="person.fill" size={24} color={color} />
+            <IconSymbol name="person.fill" size={ms(24)} color={color} />
           ),
           headerShown: false,
         }}
