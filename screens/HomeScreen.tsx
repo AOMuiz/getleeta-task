@@ -14,6 +14,7 @@ import {
 } from '@/constants/theme';
 import { useProductsList } from '@/hooks/useProductsList';
 import { Product } from '@/types/api';
+import { getTimeBasedGreetingWithEmoji } from '@/utils/greeting';
 import { ms, wp } from '@/utils/responsive-dimensions';
 import { useRouter } from 'expo-router';
 import { useCallback } from 'react';
@@ -33,6 +34,9 @@ const theme = Colors.light;
 
 export default function HomeScreen() {
   const router = useRouter();
+
+  // Get dynamic greeting based on current time
+  const greeting = getTimeBasedGreetingWithEmoji();
 
   const {
     products,
@@ -72,7 +76,7 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.greeting}>Good Morning 👋</Text>
+          <Text style={styles.greeting}>{greeting}</Text>
           <Text style={styles.headerTitle}>Special For You</Text>
         </View>
         <Pressable style={styles.notificationButton}>
