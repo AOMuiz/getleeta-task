@@ -454,7 +454,7 @@ This project showcases understanding of:
 ## 📞 Submission Details
 
 **Submitted By**: Abdulmuize Abdulwasiu
-**Submission Date**: [Date]
+**Submission Date**: 2/11/2025
 **Repository**: https://github.com/AOMuiz/getleeta-task
 **Demo Video**: [Optional - Link if created]
 
@@ -465,12 +465,6 @@ This project showcases understanding of:
 ## 🙏 Thank You
 
 Thank you for the opportunity to demonstrate my React Native skills. This project represents:
-
-- **40+ hours** of development and documentation
-- **3,500+ lines** of production-quality code
-- **15,000+ words** of technical documentation
-- **80%+ test coverage** across components
-- **Thoughtful design** and user experience
 
 I look forward to discussing the implementation details and design decisions.
 

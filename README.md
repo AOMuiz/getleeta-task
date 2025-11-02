@@ -42,7 +42,10 @@ _(Optional)_ A short screen recording (≤2 minutes) walking through the app and
 
 <!-- Embedded video: URL-encode spaces in the filename. Renaming the file to remove spaces is recommended. -->
 
-<video controls src="./assets/demo/ScreenRecording_11-02-2025%2009-35-35_1.mp4" style="max-width:100%; height:auto;"></video>
+<video controls width="100%" style="max-width:100%; height:auto;">
+  <source src="./assets/demo/screen-demo.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 [Download the MP4 (original)](./assets/demo/ScreenRecording_11-02-2025%2009-35-35_1.mp4)
 
@@ -50,7 +53,7 @@ _(Optional)_ A short screen recording (≤2 minutes) walking through the app and
 
 An Android APK built with Expo EAS is available for preview and installation from the build page:
 
-- Expo EAS build page: https://expo.dev/accounts/aomuiz/projects/getleeta-task/builds/4d84e3c6-237a-401d-a3fa-440a7ba8d8b3
+- Expo EAS build page: <https://expo.dev/accounts/aomuiz/projects/getleeta-task/builds/4d84e3c6-237a-401d-a3fa-440a7ba8d8b3>
 
 Notes:
 
