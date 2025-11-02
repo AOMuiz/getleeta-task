@@ -12,7 +12,14 @@ import { blurhash } from '@/utils';
 import { ms, wp } from '@/utils/responsive-dimensions';
 import { Image } from 'expo-image';
 import React from 'react';
-import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -122,14 +129,15 @@ const ProductCardComponent: React.FC<ProductCardProps> = ({
             <View>
               <Text style={styles.price}>${product.price.toFixed(2)}</Text>
             </View>
-            <Pressable
+            <TouchableOpacity
               style={styles.addButton}
               onPress={handleAddToCart}
               hitSlop={8}
               testID="add-to-cart-button"
+              activeOpacity={0.7}
             >
               <IconSymbol name="plus" size={ms(16)} color={theme.textInverse} />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </Pressable>

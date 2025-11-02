@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: 'space-between',
-    marginBottom: 0,
+    gap: wp(Spacing.md),
   },
   header: {
     flexDirection: 'row',
