@@ -13,11 +13,11 @@ A polished e-commerce mobile application built with React Native and Expo, showc
 - [Data Fetching Strategy](#data-fetching-strategy)
 - [API Selection](#api-selection)
 - [Micro-Interactions Implemented](#micro-interactions-implemented)
-- [Architecture & Project Structure](#architecture--project-structure)
-- [Installation & Setup](#installation--setup)
+- [Architecture &amp; Project Structure](#architecture--project-structure)
+- [Installation &amp; Setup](#installation--setup)
 - [Testing](#testing)
 - [Task Requirements Met](#task-requirements-met)
-- [Trade-offs & Limitations](#trade-offs--limitations)
+- [Trade-offs &amp; Limitations](#trade-offs--limitations)
 - [Documentation](#documentation)
 - [Development Workflow](#development-workflow)
 - [Production Readiness](#production-readiness)
@@ -38,7 +38,24 @@ This project demonstrates a production-ready mobile shopping experience with:
 
 ## 🎥 Video Demo
 
-_(Optional)_ A short screen recording (≤2 minutes) walking through the app and demonstrating the micro-interactions is available [in this video](./assets/demo/ScreenRecording_11-02-2025 09-35-35_1.mp4). If not provided, this section can be omitted.
+_(Optional)_ A short screen recording (≤2 minutes) walking through the app and demonstrating the micro-interactions is embedded below. If the embedded player does not work in your viewer, use the direct download link provided.
+
+<!-- Embedded video: URL-encode spaces in the filename. Renaming the file to remove spaces is recommended. -->
+
+<video controls src="./assets/demo/ScreenRecording_11-02-2025%2009-35-35_1.mp4" style="max-width:100%; height:auto;"></video>
+
+[Download the MP4 (original)](./assets/demo/ScreenRecording_11-02-2025%2009-35-35_1.mp4)
+
+## 📦 APK Preview (Expo EAS Build)
+
+An Android APK built with Expo EAS is available for preview and installation from the build page:
+
+- Expo EAS build page: https://expo.dev/accounts/aomuiz/projects/getleeta-task/builds/4d84e3c6-237a-401d-a3fa-440a7ba8d8b3
+
+Notes:
+
+- Click the artifact link to download the APK to your device or emulator.
+- For best results on Android devices, enable installation from unknown sources if required.
 
 ## 🎯 Tech Stack
 
@@ -556,7 +573,6 @@ If given more time, I would add:
 ### Quick Links
 
 - **[Task Requirements](./task.md)** - Original assignment
-
 - **[Theme Guide](./THEME_USAGE_GUIDE.md)** - Design system usage
 - **[API Architecture](./dev-docs/API_LAYER.md)** - API layer explanation
 
@@ -628,28 +644,6 @@ For detailed technical documentation, see the `/dev-docs` folder:
    - Use EAS Build for app store builds
    - Set up EAS Submit for automated submission
    - Configure OTA updates with EAS Update
-
-## 🎓 Learning Outcomes
-
-### What This Project Demonstrates
-
-**Technical Skills:**
-
-- Modern React Native development with Expo
-- Advanced state management patterns
-- Performance optimization techniques
-- Component testing best practices
-- TypeScript in production apps
-- Animation with Reanimated 2
-- Clean architecture patterns
-
-**Soft Skills:**
-
-- Requirements interpretation and execution
-- Balancing feature scope vs time
-- Documentation and code organization
-- Trade-off decision making
-- User-centric design thinking
 
 ## 👤 Author
 
