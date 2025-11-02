@@ -171,7 +171,7 @@ describe('HomeScreen', () => {
       render(<HomeScreen />, { wrapper });
 
       await waitFor(() => {
-        expect(screen.getByText('Good Morning 👋')).toBeTruthy();
+        expect(screen.getByText('Good morning 🌅')).toBeTruthy();
         expect(screen.getByText('Special For You')).toBeTruthy();
       });
     });
