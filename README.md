@@ -4,6 +4,26 @@ A polished e-commerce mobile application built with React Native and Expo, showc
 
 **Submission for GetLeeta Frontend Mobile UI Task**
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Video Demo](#video-demo)
+- [Tech Stack](#tech-stack)
+- [Design Philosophy](#design-philosophy)
+- [Data Fetching Strategy](#data-fetching-strategy)
+- [API Selection](#api-selection)
+- [Micro-Interactions Implemented](#micro-interactions-implemented)
+- [Architecture & Project Structure](#architecture--project-structure)
+- [Installation & Setup](#installation--setup)
+- [Testing](#testing)
+- [Task Requirements Met](#task-requirements-met)
+- [Trade-offs & Limitations](#trade-offs--limitations)
+- [Documentation](#documentation)
+- [Development Workflow](#development-workflow)
+- [Production Readiness](#production-readiness)
+- [Learning Outcomes](#learning-outcomes)
+- [Author](#author)
+
 ## 📱 Overview
 
 This project demonstrates a production-ready mobile shopping experience with:
@@ -15,6 +35,10 @@ This project demonstrates a production-ready mobile shopping experience with:
 - 🧪 **Well-tested components** with Jest and React Native Testing Library
 - 📱 **Responsive design** that adapts to various screen sizes
 - 🎬 **Animated splash screen** with smooth entrance animations
+
+## 🎥 Video Demo
+
+_(Optional)_ A short screen recording (≤2 minutes) walking through the app and demonstrating the micro-interactions is available [in this video](./assets/demo/ScreenRecording_11-02-2025 09-35-35_1.mp4). If not provided, this section can be omitted.
 
 ## 🎯 Tech Stack
 
@@ -532,10 +556,11 @@ If given more time, I would add:
 ### Quick Links
 
 - **[Task Requirements](./task.md)** - Original assignment
-- **[Development Docs](./dev-docs/)** - In-depth technical documentation
+
 - **[Theme Guide](./THEME_USAGE_GUIDE.md)** - Design system usage
-- **[API Architecture](./docs/API_ARCHITECTURE.md)** - API layer explanation
-- **[Animated Splash Screen](./docs/SPLASH_SCREEN_GUIDE.md)** - Splash screen quick guide
+- **[API Architecture](./dev-docs/API_LAYER.md)** - API layer explanation
+
+<!-- - **[Development Docs](./dev-docs/)** - In-depth technical documentation -->
 
 ### Development Docs
 

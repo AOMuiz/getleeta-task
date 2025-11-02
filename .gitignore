@@ -44,5 +44,7 @@ coverage/
 /ios
 /android
 
+dev-docs
 docs
 /docs
+/dev-docs
